@@ -20,6 +20,7 @@ public class Obfuscator {
     private ErrorReporter errorReporter;
     private Boolean compress;
     private Boolean disableConsole;
+    private Boolean controlFlowObfuscation;
     String hostName;
     
     /**
@@ -30,10 +31,11 @@ public class Obfuscator {
      *
      * @throws IOException
      */
-    public Obfuscator(Reader in, Boolean compress, Boolean disableConsole, String hostName,ErrorReporter errorReporter) throws IOException {
+    public Obfuscator(Reader in, Boolean compress, Boolean disableConsole, String hostName, Boolean controlFlowObfuscation, ErrorReporter errorReporter) throws IOException {
         this.compress = compress;
         this.disableConsole = disableConsole;
         this.hostName = hostName;
+        this.controlFlowObfuscation = controlFlowObfuscation;
         this.errorReporter = errorReporter;
         this.compilerEnvirons = CompilerEnvirons.ideEnvirons();
         this.astRoot = new Parser(this.compilerEnvirons, this.errorReporter).parse(in, null, 1);
@@ -92,6 +94,20 @@ public class Obfuscator {
         this.astRoot.visit(visitorLocalVar); 
         VisitorConstant visitorConstant = new VisitorConstant();
         this.astRoot.visit(visitorConstant);
+
+        // 控制流混淆 - 放在最后执行以获得最佳效果
+        if (this.controlFlowObfuscation != null && this.controlFlowObfuscation.booleanValue()) {
+            // 先添加不透明谓词
+            VisitorOpaquePredicates visitorOpaquePredicates = new VisitorOpaquePredicates();
+            this.astRoot.visit(visitorOpaquePredicates);
+
+            // 刷新AST以确保不透明谓词正确集成
+            this.freshAST();
+
+            // 然后进行控制流平坦化
+            VisitorControlFlowFlattening visitorControlFlowFlattening = new VisitorControlFlowFlattening();
+            this.astRoot.visit(visitorControlFlowFlattening);
+        }
     }
 
 	/**

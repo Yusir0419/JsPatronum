@@ -30,6 +30,7 @@ public class Main {
 	CmdLineParser.Option<Boolean> compressOpt = parser.addBooleanOption('c', "compress");
 	CmdLineParser.Option<Boolean> disableConsoleOpt = parser.addBooleanOption('d', "disable-console");
 	CmdLineParser.Option<String> bindHostNameOpt = parser.addStringOption('b', "bind-hostname");
+	CmdLineParser.Option<Boolean> controlFlowOpt = parser.addBooleanOption('f', "control-flow");
 	Reader in = null;
 	Writer out = null;
 
@@ -49,6 +50,7 @@ public class Main {
 
 	    Boolean compress = (Boolean) parser.getOptionValue(compressOpt);
 	    Boolean disableConsole = (Boolean) parser.getOptionValue(disableConsoleOpt);
+	    Boolean controlFlow = (Boolean) parser.getOptionValue(controlFlowOpt);
 	    String hostName = (String) parser.getOptionValue(bindHostNameOpt);
 	    // 输入
 	    String[] fileArgs = parser.getRemainingArgs();
@@ -89,7 +91,7 @@ public class Main {
 		}
 
 		final String localFilename = inputFilename;
-		Obfuscator obfuscator = new Obfuscator(in, compress, disableConsole, hostName,
+		Obfuscator obfuscator = new Obfuscator(in, compress, disableConsole, hostName, controlFlow,
 		    new ErrorReporter() {
 		    public void warning(String message, String sourceName, int line,
 			String lineSource,
@@ -181,8 +183,9 @@ public class Main {
 	    + "Additional Options\n"
 	    + " -c, --compress                         Compress code size\n"
 	    + " -d, --disable-console                  Disable console debugging\n"
+	    + " -f, --control-flow                     Enable control flow obfuscation\n"
 	    + " -b <hostname>, --bind-hostname         Bind hostname\n "
 	    + "				If you want to use all functions: \n"
-	    + "				java -jar JsPatronum.jar -c -d -b 'localhost' -o '.js$:-new.js' *.js\n");
+	    + "				java -jar JsPatronum.jar -c -d -f -b 'localhost' -o '.js$:-new.js' *.js\n");
     }
 }
