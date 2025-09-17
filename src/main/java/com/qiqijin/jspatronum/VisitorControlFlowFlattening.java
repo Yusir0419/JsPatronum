@@ -69,13 +69,17 @@ public class VisitorControlFlowFlattening implements NodeVisitor {
         InfixExpression mod = new InfixExpression();
         mod.setOperator(org.mozilla.javascript.Token.MOD);
         mod.setLeft(add);
-        mod.setRight((NumberLiteral) two.clone());
+        NumberLiteral twoClone = new NumberLiteral();
+        twoClone.setValue("2");
+        mod.setRight(twoClone);
 
         // 最终比较 == 1
         InfixExpression compare = new InfixExpression();
         compare.setOperator(org.mozilla.javascript.Token.EQ);
         compare.setLeft(mod);
-        compare.setRight((NumberLiteral) one.clone());
+        NumberLiteral oneClone = new NumberLiteral();
+        oneClone.setValue("1");
+        compare.setRight(oneClone);
 
         return compare;
     }
@@ -127,6 +131,17 @@ public class VisitorControlFlowFlattening implements NodeVisitor {
     }
 
     /**
+     * 获取Block中的所有语句
+     */
+    private List<AstNode> getBlockStatements(Block block) {
+        List<AstNode> statements = new ArrayList<AstNode>();
+        for (AstNode node : block) {
+            statements.add(node);
+        }
+        return statements;
+    }
+
+    /**
      * 转换函数体为控制流平坦化结构
      */
     private void flattenFunctionBody(FunctionNode function) {
@@ -136,7 +151,7 @@ public class VisitorControlFlowFlattening implements NodeVisitor {
         }
 
         Block originalBlock = (Block) body;
-        List<AstNode> originalStatements = new ArrayList<>(originalBlock);
+        List<AstNode> originalStatements = getBlockStatements(originalBlock);
 
         if (originalStatements.size() < 2) {
             return; // 太简单的函数不需要混淆

@@ -68,7 +68,9 @@ public class VisitorOpaquePredicates implements NodeVisitor {
         InfixExpression square = new InfixExpression();
         square.setOperator(org.mozilla.javascript.Token.MUL);
         square.setLeft(num);
-        square.setRight((NumberLiteral) num.clone());
+        NumberLiteral numClone = new NumberLiteral();
+        numClone.setValue(String.valueOf(x));
+        square.setRight(numClone);
 
         // (x * x) >= 0
         NumberLiteral zero = new NumberLiteral();
@@ -110,13 +112,17 @@ public class VisitorOpaquePredicates implements NodeVisitor {
         InfixExpression mod = new InfixExpression();
         mod.setOperator(org.mozilla.javascript.Token.MOD);
         mod.setLeft(add);
-        mod.setRight((NumberLiteral) two.clone());
+        NumberLiteral twoClone = new NumberLiteral();
+        twoClone.setValue("2");
+        mod.setRight(twoClone);
 
         // 结果 == 1
         InfixExpression compare = new InfixExpression();
         compare.setOperator(org.mozilla.javascript.Token.EQ);
         compare.setLeft(mod);
-        compare.setRight((NumberLiteral) one.clone());
+        NumberLiteral oneClone = new NumberLiteral();
+        oneClone.setValue("1");
+        compare.setRight(oneClone);
 
         return compare;
     }
@@ -170,8 +176,12 @@ public class VisitorOpaquePredicates implements NodeVisitor {
         // x | 0 (右侧)
         InfixExpression bitwiseOr2 = new InfixExpression();
         bitwiseOr2.setOperator(org.mozilla.javascript.Token.BITOR);
-        bitwiseOr2.setLeft((NumberLiteral) num.clone());
-        bitwiseOr2.setRight((NumberLiteral) zero.clone());
+        NumberLiteral numClone2 = new NumberLiteral();
+        numClone2.setValue(String.valueOf(x));
+        NumberLiteral zeroClone = new NumberLiteral();
+        zeroClone.setValue("0");
+        bitwiseOr2.setLeft(numClone2);
+        bitwiseOr2.setRight(zeroClone);
 
         // (x | 0) == (x | 0)
         InfixExpression compare = new InfixExpression();
@@ -192,7 +202,9 @@ public class VisitorOpaquePredicates implements NodeVisitor {
         InfixExpression square = new InfixExpression();
         square.setOperator(org.mozilla.javascript.Token.MUL);
         square.setLeft(num);
-        square.setRight((NumberLiteral) num.clone());
+        NumberLiteral numClone = new NumberLiteral();
+        numClone.setValue(String.valueOf(x));
+        square.setRight(numClone);
 
         // (x * x) < 0
         NumberLiteral zero = new NumberLiteral();
@@ -224,7 +236,9 @@ public class VisitorOpaquePredicates implements NodeVisitor {
         // x & (x + 1)
         InfixExpression bitAnd = new InfixExpression();
         bitAnd.setOperator(org.mozilla.javascript.Token.BITAND);
-        bitAnd.setLeft((NumberLiteral) num.clone());
+        NumberLiteral numClone3 = new NumberLiteral();
+        numClone3.setValue(String.valueOf(x));
+        bitAnd.setLeft(numClone3);
         bitAnd.setRight(add);
 
         // (x & (x + 1)) < 0
